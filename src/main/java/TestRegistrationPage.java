@@ -1,4 +1,5 @@
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -8,7 +9,10 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static java.awt.SystemColor.text;
 
 public class TestRegistrationPage {
 
@@ -29,7 +33,7 @@ public class TestRegistrationPage {
     }
 
 
-
+    // проверка наличия тайтла
     @Test
     public void pageTitle(){
         driver.get("https://accounts.google.com/SignUp");
@@ -38,6 +42,8 @@ public class TestRegistrationPage {
         pageTitle.isDisplayed();
     }
 
+
+    // корректно заполненые поля
     @Test
     public void PassRegistration()  {
         driver.get("https://accounts.google.com/SignUp"); //переходим по ссылке
@@ -84,6 +90,8 @@ public class TestRegistrationPage {
 
     }
 
+
+    // попытка зарегистрировать эмейл с неправильной длинной
     @Test
     public void IncorrectLengtsEmail() {
         driver.get("https://accounts.google.com/SignUp"); //переходим по ссылке
@@ -95,29 +103,13 @@ public class TestRegistrationPage {
 
         driver.manage().timeouts().implicitlyWait(1000, TimeUnit.MILLISECONDS);
 
-        WebElement errorText = driver.findElement(By.xpath("//*[text()='Please use between 6 and 30 characters.']"));
+        WebElement errorText = driver.findElement(By.xpath("//*[@id=\"errormsg_0_GmailAddress\"]"));
         errorText.getText();
-        System.out.println(errorText.getText());
-
     }
 
-    //попытка зарегестрировать уже существующий адрес
-    @Test
-    public void AddedEmail() {
-        driver.get("https://accounts.google.com/SignUp"); //переходим по ссылке
 
-        WebElement gmailAdressLengt = driver.findElement(By.id("GmailAddress"));
-        gmailAdressLengt.sendKeys("testaccount");
-        WebElement password = driver.findElement(By.id("Passwd"));
-        password.click();
 
-        driver.manage().timeouts().implicitlyWait(1000, TimeUnit.MILLISECONDS);
-
-        WebElement errorTexting = driver.findElement(By.xpath("//*[@id=\"errormsg_0_GmailAddress\"]"));
-        errorTexting.getText();
-        System.out.println(errorTexting.getText());
-    }
-
+// не заполненое поле имя
     @Test
     public void EmptyField(){
         driver.get("https://accounts.google.com/SignUp"); //переходим по ссылке
@@ -129,10 +121,51 @@ public class TestRegistrationPage {
 
         driver.manage().timeouts().implicitlyWait(1000, TimeUnit.MILLISECONDS);
 
-        WebElement errorTexting = driver.findElement(By.xpath("//*[text()='You can't leave this empty.']"));
+        WebElement errorTexting = driver.findElement(By.xpath("//*[@id=\"errormsg_0_FirstName\"]"));
         errorTexting.getText();
     }
 
 
+    // Сравнение тайтла страницы
+    @Test
+    public void TextTitle(){
+        driver.get("https://accounts.google.com/SignUp"); //переходим по ссылке
+        Assert.assertEquals(driver.getTitle(), "Зарегистрируйтесь в Google");
+    }
+
+    // Переход на страницу "Использовать текущий адрес электронной почты"
+    @Test
+    public void CreatedEmailPage(){
+        driver.get("https://accounts.google.com/SignUp");
+        WebElement createLink = driver.findElement(By.linkText("Использовать текущий адрес эл. почты"));
+        createLink.getText();
+    }
+    // Проверка лейблы над полем Gmail
+    @Test
+    public void LabelPage(){
+        driver.get("https://accounts.google.com/SignUp");
+        WebElement gmailLabel = driver.findElement(By.cssSelector("#gmail-address-label > strong:nth-child(1)"));
+        Assert.assertEquals("Придумайте имя пользователя", gmailLabel.getText());
+
+    }
+
+
+
+
+//    @Test
+//    public  void PageError(){
+//        driver.get("https://accounts.google.com/SignUp");
+//
+//        WebElement firstName = driver.findElement(By.id("GmailAddress"));
+//        firstName.sendKeys("jbj");
+//        WebElement password = driver.findElement(By.id("Passwd"));
+//        password.click();
+//
+//        WebElement errorCss = driver.findElement(By.cssSelector("#errormsg_0_GmailAddress"));
+//        errorCss.getText();
+//        System.out.println(errorCss.getText());
+//        Assert.assertEquals("Допустимое количество символов: 6–30.", errorCss.getText());
+//    }
+//
 
 }
